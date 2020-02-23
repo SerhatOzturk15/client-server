@@ -8,7 +8,7 @@
 #include <fcntl.h>
 #include <stdbool.h>
 
-//THIS IS SERVER SIDE OF MY CLIENT SERVER APPLICATION, I SHARE IT WITH YOU WITHOUT CHANGING ANYTHING.
+//THIS IS SERVER SIDE OF MY CLIENT SERVER APPLICATION HANDLES COMMUNICATION BETWEEN CLIENT AND SERVER.
 
 //this is to hold incoming message words in a linkedlist
 struct node{
@@ -23,16 +23,13 @@ struct node{
 
 static void *dotheJob(void *argPtr){
 	//initialize thread spesific variables
-	//sprintf(lineChar, "%d", lineCounter);
 	char fileNames[1000];  //file names to search file
 	char searchWord[1000];  //the keyword to search
 	char lines[1000];   // store each line in it
 	strncpy(fileNames, ((struct node *) argPtr)->string, 128);
 	int fileID= ((struct node *) argPtr)->number;
 	strncpy(searchWord, ((struct node *) argPtr)->t_keyword, 128);
-	//printf("i am the thread: %s \n", fileNames);
-	//printf("numbers are:  %d \n", fileID);
-	//printf("keywords are here:%s\n", searchWord);
+
 	//open files and read them.
 	FILE *theFile;
 	theFile = fopen(fileNames, "r");
@@ -46,7 +43,6 @@ static void *dotheJob(void *argPtr){
 	int matchedLines = 1;
 
 	while(fgets(lines, sizeof(lines), theFile)){
-		//printf("nth line is:%s\n", lines);
 		//char * s10 = NULL;
 		//asprintf(&s10, "%s%s", lines, " klm");
 		//strncpy(lines, s10, sizeof(lines));
@@ -54,12 +50,7 @@ static void *dotheJob(void *argPtr){
 		//get first word
 			char *saveptr;
 		cuttedWord = strtok_r(lines, " ", &saveptr);
-		//printf("ilk word is: %s\n", cuttedWord);
-		//printf("1st word: %s\n", delimit);
-		//printf("SIZE is:%d\n",sizeof(cuttedWord));
-		//printf("words outside strcmp:-%s-\n", cuttedWord);
 		if(strcmp(cuttedWord,searchWord ) == 0){
-		//printf("words inside strcmp:%s\n", cuttedWord);
 			((struct node *) argPtr)->wordCounter++;
 			//printf("counter is:%d\n",((struct node *) argPtr)->wordCounter);
 			((struct node *) argPtr)->lineCounter[i] = matchedLines;
@@ -115,7 +106,6 @@ int main(int argc, char *argv[]){
 	int N = 0;
 	pid_t id[N];
     int counter = 0;
-	//linked list initialization
 	struct node* head;
 	struct node* follow;
 	while(running){
@@ -150,9 +140,9 @@ int main(int argc, char *argv[]){
 					}
 				N = N+1;
 				
-			}//if end	
-		}	//else end
-	}		//while end
+			}	
+		}	
+	}
 	
 	if(child = true){
 		//lets set request queue parameters to usable attributes here
@@ -163,14 +153,10 @@ int main(int argc, char *argv[]){
 		strncpy(replyQ, usable->string, 100);
 		usable = usable->next;
 		strncpy(keyword, usable->string, 100);
-		//strncpy(t_keyword, usable->string, 100);
 		usable = usable->next;
 		strncpy(numOfFiles, usable->string, 100);
 		usable = usable->next;
 		int num = atoi(numOfFiles);
-		//printf("thus %s \n", replyQ);
-		//printf("thus %s \n", keyword);
-		//printf("thus %s \n", numOfFiles);
 		int count = 0;
 		int ret;
 		pthread_t tids[num];
@@ -178,6 +164,7 @@ int main(int argc, char *argv[]){
 		struct node t_args[num];
 		struct node* filesBeginning = usable;
 		struct node* filesBeginning2 = usable;
+		
 		//arranging what will pass to the threads
 		for(count; count<num; count++){
 			strncpy(usable->t_keyword, keyword, 100);
@@ -194,14 +181,15 @@ int main(int argc, char *argv[]){
 			}
 			filesBeginning = filesBeginning->next;
 		}
-
+		
+		// joining threads and handling error
 		for(k =0; k<num;k++){
 			ret = pthread_join(tids[k], NULL);
 			if(ret != 0){
 				fprintf(stderr, "Error joining thread\n");
 				exit(0);
 			}
-		} //for end
+		}
 		
 		//open reply queue
 		int f = 0;
@@ -212,10 +200,7 @@ int main(int argc, char *argv[]){
 			perror("can not open msg queue\n");
 			exit(1);
 		}
-		//int c = 0;
-		//for(c; c<filesBeginning2->wordCounter; c++){
-		//	printf("in which lines: %d \n", filesBeginning2->lineCounter[c]);
-		//}
+
 		//send messages
 		char wordCounterChar[128];
 		struct node* filesBeginning3 = filesBeginning2;
@@ -234,13 +219,9 @@ int main(int argc, char *argv[]){
 				sprintf(charLineNumbers, "%d",filesBeginning2->lineCounter[iter]);
 				mq_send(repq, (char*)charLineNumbers,sizeof(replyQ), 0);
 			}
-			
-			
-			
-			filesBeginning2 = filesBeginning2->next;
-			
-		}
-		
+									
+			filesBeginning2 = filesBeginning2->next;	
+		}		
 		//send messages
 		exit(0);
 		

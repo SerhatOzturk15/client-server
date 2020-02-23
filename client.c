@@ -22,10 +22,8 @@ int main(int argc, char *argv[]){
 	char * s = NULL;
 	asprintf(&s, "%s %s", "/", mq_name);
 	strncpy(mq_name, s, sizeof(mq_name));
-	//printf("after op %s \n", mq_name);
 	//create the reply queue
 	repq = mq_open(mq_name, O_CREAT, 0666, NULL);
-	//printf("ReplyQ created, mq id = %d\n", (int) repq);
 	if (repq ==-1) {
 	    printf("birinci");
 	perror("can not open msg queue\n");
@@ -35,12 +33,7 @@ int main(int argc, char *argv[]){
 	char reqName[100];
 	strncpy(reqName, argv[1], sizeof(reqName));
 	//adding slash to req queue name
-	/*
-	char * s2 = NULL;
-	asprintf(&s2, "%s %s", "/", reqName);
-	strncpy(reqName, s2, sizeof(reqName));
-	*/
-	//printf("req queue name is: %s", reqName);
+
 	//open request to send messages to server
 	reqq =mq_open(reqName, O_WRONLY|O_NONBLOCK, 0666, NULL);
 	//printf("RQ created, mq id = %d\n", (int) reqq);
@@ -51,7 +44,7 @@ int main(int argc, char *argv[]){
 	}
 	char deneme[128];
 	mq_send(reqq, (char*)mq_name,sizeof(deneme), 0);
-	//printf("rep q name %s \n", mq_name);
+
 	int j = 0;
 	int N = atoi(argv[3]);
 	int inputs = 2; 
@@ -66,9 +59,8 @@ int main(int argc, char *argv[]){
 	//send char for ending client send
 	mq_send(reqq, (char*)"end",sizeof(deneme), 0);
 	
-	//sprintf(deneme, "%d", k);
-	//mq_send(reqq, (char*)deneme,sizeof(deneme), 0);
-	//printf("%s", deneme);
+	
+	// print received data from server one by one
 	char *bufptr;
 	int buflen = 100000;
 	bufptr = (char *) malloc(buflen);
