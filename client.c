@@ -25,7 +25,7 @@ int main(int argc, char *argv[]){
 	//create the reply queue
 	repq = mq_open(mq_name, O_CREAT, 0666, NULL);
 	if (repq ==-1) {
-	    printf("birinci");
+	    printf("first");
 	perror("can not open msg queue\n");
 	exit(1);
 	}
@@ -38,7 +38,7 @@ int main(int argc, char *argv[]){
 	reqq =mq_open(reqName, O_WRONLY|O_NONBLOCK, 0666, NULL);
 	//printf("RQ created, mq id = %d\n", (int) reqq);
 	if (reqq ==-1) {
-	    printf("ikinci");
+	    printf("second");
 	perror("can not open msg queue\n");
 	exit(1);
 	}

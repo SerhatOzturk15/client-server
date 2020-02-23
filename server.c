@@ -43,12 +43,9 @@ static void *dotheJob(void *argPtr){
 	int matchedLines = 1;
 
 	while(fgets(lines, sizeof(lines), theFile)){
-		//char * s10 = NULL;
-		//asprintf(&s10, "%s%s", lines, " klm");
-		//strncpy(lines, s10, sizeof(lines));
 		
 		//get first word
-			char *saveptr;
+		char *saveptr;
 		cuttedWord = strtok_r(lines, " ", &saveptr);
 		if(strcmp(cuttedWord,searchWord ) == 0){
 			((struct node *) argPtr)->wordCounter++;
@@ -59,20 +56,15 @@ static void *dotheJob(void *argPtr){
 	
 		//rest
 		while((cuttedWord2 = strtok_r(NULL, " \n", &saveptr)) != NULL){
-				//printf("SIZE is:%d\n",sizeof(cuttedWord));
-				//printf("words outside strcmp:-%s-\n", cuttedWord);
+
 			if(strcmp(cuttedWord2,searchWord ) == 0){
 				((struct node *) argPtr)->wordCounter++;
-				//printf("words inside strcmp: %s\n", cuttedWord);
-				//printf("counter is:%d\n",((struct node *) argPtr)->wordCounter);
 				((struct node *) argPtr)->lineCounter[i] = matchedLines;
 				i++;
-				}//endif
-			}//endwhile
+				}
+			}
 		matchedLines++; //keep which lines are matched
-	}//end-mainwhile
-	//printf("number of mathes are: %d \n",((struct node *) argPtr)->wordCounter );
-	
+	}	
 	pthread_exit(NULL);
 }
 
@@ -81,25 +73,19 @@ int main(int argc, char *argv[]){
 	mqd_t repq;
 	char reqName[100];
 	strncpy(reqName, argv[1], sizeof(reqName));
-	//adding slash to req queue name
-	//printf("after op %s\n", reqName);
-	//char * s2 = NULL;
-	//asprintf(&s2, "%s %s", "/", reqName);
-	//strncpy(reqName, s2, sizeof(reqName));
-	//printf("req queue name is: %s\n", reqName);
+
 	//open the request queue for read and creation
 	reqq = mq_open(reqName, O_RDWR|O_CREAT, 0666, NULL);
-	//printf("RQ created, mq id = %d\n", (int) reqq);
+
 	if (reqq ==-1) {
-	    printf("üçüncü");
+	    printf("third");
 	perror("can not open msg queue\n");
 	exit(1);
 	}
 
 	bool child = false;
 	int buflen = 100000;
-	char *bufptr;
-	bufptr = (char *) malloc(buflen);
+	char *bufptr = (char *) malloc(buflen);
 	char dene[128];
 	int running = 1;
 	int i=0;
@@ -196,7 +182,7 @@ int main(int argc, char *argv[]){
 		char deneme[128];
 		repq = mq_open(replyQ, O_RDWR, 0666, NULL);
 		if (repq ==-1) {
-		    printf("dördüncü");
+		    printf("fourth");
 			perror("can not open msg queue\n");
 			exit(1);
 		}
@@ -204,11 +190,9 @@ int main(int argc, char *argv[]){
 		//send messages
 		char wordCounterChar[128];
 		struct node* filesBeginning3 = filesBeginning2;
-		//convert line numbers to char array to pass to mq_send
-					
-			
+		
+		//convert line numbers to char array to pass to mq_send								
 		for(f; f<num; f++){
-			//mq_send(repq, (char*),sizeof(replyQ), 0);
 			mq_send(repq, (char*)filesBeginning2->string,sizeof(replyQ), 0);
 			//convert word counter to char
 			sprintf(wordCounterChar, "%d",filesBeginning2->wordCounter);
